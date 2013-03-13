@@ -1,0 +1,90 @@
+
+
+
+8051 ASSEMBLER VER 1.00             NONAME                      11-FEB-;3 21:07
+                                                                       PAGE   1
+
+
+     1 0000                     ORG     00
+     2 0000 2100                JMP     100H
+     3                   ; external interupts
+     4 0003                     ORG     03
+     5 0003 C0D0                PUSH    PSW
+     6 0005 75D018              MOV     PSW,#18h  ;select bank1
+     7 0008 802C                sjmp     goon
+     8                  ;timer interupts
+     9 000B                     ORG     0Bh
+    10 000B C0D0                push psw
+    11 000D C0E0                push acc            ; save intrrupted program
+    12 000F 8590D0              mov     psw, 90h       ; select bank 2, clr C
+    13 0012 02003D              jmp     timer_subr
+    14                  ;serial port
+    15 0023                     ORG     23H
+    16 0023 C0D0                 push psw
+    17 0025 C0E0                push acc            ; save intrrupted program
+    18 0027 E599                mov  a,sbuf
+    19 0029 20E703              jb   acc.7,dir_cod
+    20 002C F4                   cpl  a
+    21 002D 4480                 orl   a,#80h
+    22 002F F590        dir_cod:         mov  p1,a
+    23 0031 C298                 CLR     RI
+    24 0033 D0E0                 pop     acc         ; restore and exit
+    25 0035 32                  RETI
+    26 0036 C0E0        goon:   push acc
+    27
+    28 0038 D0E0                pop  acc
+    29 003A D0D0                POP     PSW
+    30 003C 32                  RETI
+    31
+    32 003D             timer_subr:
+    33 003D E9                   mov     a,r1
+    34 003E 9414                subb      a,#14h
+    35 0040 7002                jnz      near
+    36 0042 A9FF                mov  r1, 0ffh
+    37 0044 09          near:   inc     r1
+    38 0045 8980                mov     p0,r1
+    39 0047 D0E0                pop     acc         ; restore and exit
+    40 0049 D0D0                pop     psw
+    41 004B 32                  RETI
+    42
+    43
+    44                  ; main program
+    45 0100                     ORG     100H
+    46 0100 758150              mov     sp,#50h   ; stack location
+    47 0103 75D000              MOV     PSW,#00          ; select bank 0
+    48 0106 758CF0              MOV     TH0,#0F0H
+    49 0109 758AF0              MOV     TL0,#0F0H
+    50 010C 758922              MOV     TMOD,#22H    ;prepare timer
+    51 010F 759850              mov      scon,#50h  ; prepare serial port
+    52 0112 D28C                SETB    TR0
+    53 0114 75A883              MOV     IE,#83H     ; interupt enable
+    54 0117 750B00              mov     11,#00      ; initial value for meander
+    55 011A 7400        M:     MOV     A,#00         ; main program
+    56 011C 7810                MOV     R0,#10H
+
+
+
+
+
+
+8051 ASSEMBLER VER 1.00             NONAME                      11-FEB-;3 21:07
+                                                                       PAGE   2
+
+
+    57 011E 2405                ADD     A,#05
+    58 0120 26                  ADD     A,@R0
+    59 0121 29                  ADD     A,R1
+    60 0122 2A                  ADD     A,R2
+    61 0123 80F5                SJMP    M
+    62 0125                     END
+
+
+
+
+
+ DIR_COD      002F   GOON         0036   M            011A   NEAR         0044
+ TIMER_SUBR   003D
+
+
+ **** Errors:    0, Warnings:    0
+
