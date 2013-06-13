@@ -10,20 +10,20 @@ import scala.math.Numeric.DoubleAsIfIntegral
  */
 object NumericalDifferentiation {
 
-  def f(x:Double):Double = (exp(x + 5) * cos(7 * pow(x, 2)) * (x - 2)) / (1 + pow(atan(3 + x), 2))
+  def f(x:Double):Double = (exp(x + 5) * cos(7 * pow(x, 4)) * (x - 2)) / (1 + pow(atan(3 + x), 2))
   def left_f_deriv(x:Double, h:Double):Double = (f(x) - f(x - h)) / h
   def right_f_deriv(x:Double, h:Double):Double = (f(x + h) - f(x)) / h
   def mid_f_deriv(x:Double, h:Double):Double = (f(x + h) - f(x - h)) / (2 * h)
   def f_deriv(x:Double):Double = {
-    val COS = cos(7 * pow(x, 2))
+    val COS = cos(7 * pow(x, 4))
     val DEN = 1 + pow(atan(x + 3), 2)
 
     val B = COS * (x - 2)
-    val dB = x * COS - 14 * x * (x - 2) * sin(7 * pow(x, 2))
+    val dB = COS - 28 * pow(x, 3) * (x - 2) * sin(7 * pow(x, 4))
     val C = DEN
     val dC = 2 * atan(3 + x) / (1 + pow(x + 3, 2))
     val A = (x - 2) * COS / DEN
-    val dA = (B * dC - dB * C)/pow(C, 2)
+    val dA = (dB * C - B * dC)/pow(C, 2)
 
     exp(x+5) * (A + dA)
   }
@@ -68,7 +68,7 @@ object NumericalDifferentiation {
       currentStep = calculateArray(h, deriv)
       if(isEnd(currentStep, previousStep)) over = true
       // this barrier I need to escape an infinity loop
-      else if(h < 1e-12) over = true
+      else if(h < 1e-13) over = true
     } while(!over)
 
     return (currentStep, h)
