@@ -41,7 +41,7 @@ object NumericalDifferentiation {
   def isEnd(a:Array[Double], b:Array[Double]):Boolean = {
     var result = true
     (a, b).zipped foreach { (j, k) =>
-      result = result && (math.abs(j - k) <= MINIMUM_DELTA)
+      result = result && (math.abs(j - k) <= MINIMUM_DELTA*10)
     }
     return result
   }
@@ -67,8 +67,6 @@ object NumericalDifferentiation {
       h = h/2.0
       currentStep = calculateArray(h, deriv)
       if(isEnd(currentStep, previousStep)) over = true
-      // this barrier I need to escape an infinity loop
-      else if(h < 1e-13) over = true
     } while(!over)
 
     return (currentStep, h)

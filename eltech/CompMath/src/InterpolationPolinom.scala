@@ -7,4 +7,6 @@
  */
 object InterpolationPolinomial {
 
+
+
 }
